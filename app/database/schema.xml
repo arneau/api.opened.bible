@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database defaultIdMethod="native" name="default" tablePrefix="defender_">
+	<behavior name="auto_add_pk" />
+
+	<!-- Bible tables -->
+	<table name="bible">
+		<column name="code" required="true" size="255" type="varchar" />
+		<column name="name" required="true" size="255" type="varchar" />
+	</table>
+	<table name="book">
+		<column name="chapter_count" required="true" type="integer" />
+		<column name="name" required="true" size="255" type="varchar" />
+	</table>
+	<table name="book_abbreviation">
+		<column name="book_id" required="true" type="integer" />
+		<column name="name" required="true" size="255" type="varchar" />
+		<foreign-key foreignTable="book">
+			<reference foreign="id" local="book_id" />
+		</foreign-key>
+	</table>
+	<table name="verse">
+		<column name="book_id" required="true" type="integer" />
+		<column name="chapter_number" required="true" type="integer" />
+		<column name="verse_number" required="true" type="integer" />
+		<foreign-key foreignTable="book">
+			<reference foreign="id" local="book_id" />
+		</foreign-key>
+	</table>
+	<table name="verse_translation">
+		<column name="bible_id" required="true" type="integer" />
+		<column name="previous_verses_word_count" required="true" type="integer" />
+		<column name="text" required="true" size="1000" type="varchar" />
+		<column name="verse_id" required="true" type="integer" />
+		<column name="word_count" required="true" type="integer" />
+		<foreign-key foreignTable="bible">
+			<reference foreign="id" local="bible_id" />
+		</foreign-key>
+		<foreign-key foreignTable="verse">
+			<reference foreign="id" local="verse_id" />
+		</foreign-key>
+	</table>
+
+	<!-- Lesson tables -->
+	<table name="lesson">
+		<column name="is_root" size="1" type="integer" />
+		<column name="title" required="true" size="1000" type="varchar" />
+	</table>
+	<table name="lesson_parent">
+		<column name="lesson_id" primaryKey="true" type="integer" />
+		<column name="parent_id" primaryKey="true" type="integer" />
+		<foreign-key foreignTable="lesson" onDelete="cascade">
+			<reference foreign="id" local="lesson_id" />
+		</foreign-key>
+		<foreign-key foreignTable="lesson" onDelete="cascade" phpName="x">
+			<reference foreign="id" local="parent_id" />
+		</foreign-key>
+	</table>
+	<table name="lesson_note">
+		<column name="lesson_id" required="true" type="integer" />
+		<column name="note_id" required="true" type="integer" />
+		<foreign-key foreignTable="lesson" onDelete="cascade">
+			<reference foreign="id" local="lesson_id" />
+		</foreign-key>
+		<foreign-key foreignTable="note">
+			<reference foreign="id" local="note_id" />
+		</foreign-key>
+	</table>
+	<table name="lesson_tag">
+		<column name="lesson_id" required="true" type="integer" />
+		<column name="tag_id" required="true" type="integer" />
+		<foreign-key foreignTable="lesson" onDelete="cascade">
+			<reference foreign="id" local="lesson_id" />
+		</foreign-key>
+		<foreign-key foreignTable="tag" onDelete="cascade">
+			<reference foreign="id" local="tag_id" />
+		</foreign-key>
+	</table>
+
+	<!-- Note tables -->
+	<table name="note">
+		<column name="title" required="true" size="255" type="varchar" />
+	</table>
+	<table name="note_content">
+		<column name="note_id" required="true" type="integer" />
+		<column name="value" required="true" type="blob" />
+		<foreign-key foreignTable="note">
+			<reference foreign="id" local="note_id" />
+		</foreign-key>
+	</table>
+
+	<!-- Tag tables -->
+	<table name="tag">
+		<behavior name="aggregate_column">
+			<parameter name="name" value="vote_count" />
+			<parameter name="foreign_table" value="tag_vote" />
+			<parameter name="expression" value="COUNT(tag_id)" />
+		</behavior>
+		<column defaultValue="0" name="vote_count" type="integer" />
+	</table>
+	<table name="tag_highlighter">
+		<column name="bible_id" required="true" type="integer" />
+		<column name="relevant_words" required="true" size="255" type="varchar" />
+		<column name="tag_id" required="true" type="integer" />
+		<foreign-key foreignTable="bible">
+			<reference foreign="id" local="bible_id" />
+		</foreign-key>
+		<foreign-key foreignTable="tag" onDelete="cascade">
+			<reference foreign="id" local="tag_id" />
+		</foreign-key>
+	</table>
+	<table name="tag_verse">
+		<column name="tag_id" required="true" type="integer" />
+		<column name="verse_id" required="true" type="integer" />
+		<foreign-key foreignTable="tag" onDelete="cascade">
+			<reference foreign="id" local="tag_id" />
+		</foreign-key>
+		<foreign-key foreignTable="verse">
+			<reference foreign="id" local="verse_id" />
+		</foreign-key>
+	</table>
+	<table name="tag_vote">
+		<column name="tag_id" required="true" type="integer" />
+		<foreign-key foreignTable="tag" onDelete="cascade">
+			<reference foreign="id" local="tag_id" />
+		</foreign-key>
+	</table>
+
+	<!-- Topic tables -->
+	<table name="topic">
+		<column name="is_root" size="1" type="integer" />
+		<column name="title" required="true" size="255" type="varchar" />
+	</table>
+	<table name="topic_parent">
+		<column name="topic_id" primaryKey="true" type="integer" />
+		<column name="parent_id" primaryKey="true" type="integer" />
+		<foreign-key foreignTable="topic" onDelete="cascade">
+			<reference foreign="id" local="topic_id" />
+		</foreign-key>
+		<foreign-key foreignTable="topic" onDelete="cascade" phpName="x">
+			<reference foreign="id" local="parent_id" />
+		</foreign-key>
+	</table>
+	<table name="topic_lesson" isCrossRef="true">
+		<column name="lesson_id" primaryKey="true" type="integer" />
+		<column name="topic_id" primaryKey="true" type="integer" />
+		<foreign-key foreignTable="lesson" onDelete="cascade">
+			<reference foreign="id" local="lesson_id" />
+		</foreign-key>
+		<foreign-key foreignTable="topic" onDelete="cascade">
+			<reference foreign="id" local="topic_id" />
+		</foreign-key>
+	</table>
+	<table name="topic_note">
+		<column name="topic_id" required="true" type="integer" />
+		<column name="note_id" required="true" type="integer" />
+		<foreign-key foreignTable="topic">
+			<reference foreign="id" local="topic_id" />
+		</foreign-key>
+		<foreign-key foreignTable="note">
+			<reference foreign="id" local="note_id" />
+		</foreign-key>
+	</table>
+	<table name="topic_synonym">
+		<column name="name" required="true" size="255" type="varchar" />
+		<column name="topic_id" required="true" type="integer" />
+		<foreign-key foreignTable="topic" onDelete="cascade">
+			<reference foreign="id" local="topic_id" />
+		</foreign-key>
+	</table>
+	<table name="topic_tag">
+		<column name="tag_id" required="true" type="integer" />
+		<column name="topic_id" required="true" type="integer" />
+		<foreign-key foreignTable="tag" onDelete="cascade">
+			<reference foreign="id" local="tag_id" />
+		</foreign-key>
+		<foreign-key foreignTable="topic">
+			<reference foreign="id" local="topic_id" />
+		</foreign-key>
+	</table>
+
+	<!-- Argument tables -->
+	<table name="answer">
+		<column name="answer_type_id" required="true" type="integer" />
+		<column name="response_id" required="true" type="integer" />
+		<column name="text" required="true" size="255" type="varchar" />
+		<foreign-key foreignTable="answer_type">
+			<reference foreign="id" local="answer_type_id" />
+		</foreign-key>
+		<foreign-key foreignTable="response">
+			<reference foreign="id" local="response_id" />
+		</foreign-key>
+	</table>
+	<table name="answer_type">
+		<column name="value" required="true" size="255" type="varchar" />
+	</table>
+	<table name="response">
+		<column name="explanation" size="255" type="varchar" />
+		<column name="text" required="true" size="255" type="varchar" />
+	</table>
+	<table name="statement">
+		<column name="response_id" required="true" type="integer" />
+		<column name="text" required="true" size="255" type="varchar" />
+		<foreign-key foreignTable="response">
+			<reference foreign="id" local="response_id" />
+		</foreign-key>
+	</table>
+
+</database>

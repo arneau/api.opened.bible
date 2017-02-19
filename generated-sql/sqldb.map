@@ -1,0 +1,7 @@
+# Sqlfile -> Database map
+default.sql=default
+bibles.sql=default
+books.sql=default
+books_abbreviations.sql=default
+verses.sql=default
+verses_translations.sql=default

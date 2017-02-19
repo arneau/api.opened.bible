@@ -1,0 +1,10 @@
+<?php
+
+return [
+	'propel' => [
+		'paths' => [
+			'schemaDir' => '/Users/arneau/Documents/api.opened.bible/app/database/',
+			'phpDir' => '/Users/arneau/Documents/api.opened.bible/app/models/',
+		],
+	],
+];
