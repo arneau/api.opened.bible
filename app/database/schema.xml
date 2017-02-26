@@ -40,6 +40,26 @@
 		</foreign-key>
 	</table>
 
+	<!-- Tables (divider, division, group, grouping, section, category, container, folder, pocket) -->
+	<table name="pocket">
+		<column name="is_root" size="1" type="integer" />
+		<column name="title" required="true" size="255" type="varchar" />
+		<column name="type" inheritance="single" type="integer">
+			<inheritance key="1" class="NewTopic" />
+			<inheritance key="2" class="NewLesson" />
+		</column>
+	</table>
+	<table name="pocket_parent">
+		<column name="parent_id" primaryKey="true" type="integer" />
+		<column name="pocket_id" primaryKey="true" type="integer" />
+		<foreign-key foreignTable="pocket" onDelete="cascade">
+			<reference foreign="id" local="parent_id" />
+		</foreign-key>
+		<foreign-key foreignTable="pocket" onDelete="cascade" phpName="x">
+			<reference foreign="id" local="pocket_id" />
+		</foreign-key>
+	</table>
+
 	<!-- Lesson tables -->
 	<table name="lesson">
 		<column name="is_root" size="1" type="integer" />

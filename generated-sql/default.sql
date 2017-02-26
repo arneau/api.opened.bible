@@ -94,6 +94,43 @@ CREATE TABLE `defender_verse_translation`
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
+-- defender_pocket
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `defender_pocket`;
+
+CREATE TABLE `defender_pocket`
+(
+    `is_root` INTEGER(1),
+    `title` VARCHAR(255) NOT NULL,
+    `type` INTEGER,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- defender_pocket_parent
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `defender_pocket_parent`;
+
+CREATE TABLE `defender_pocket_parent`
+(
+    `parent_id` INTEGER NOT NULL,
+    `pocket_id` INTEGER NOT NULL,
+    PRIMARY KEY (`parent_id`,`pocket_id`),
+    INDEX `defender_pocket_parent_fi_54cad9` (`pocket_id`),
+    CONSTRAINT `defender_pocket_parent_fk_7c2423`
+        FOREIGN KEY (`parent_id`)
+        REFERENCES `defender_pocket` (`id`)
+        ON DELETE CASCADE,
+    CONSTRAINT `defender_pocket_parent_fk_54cad9`
+        FOREIGN KEY (`pocket_id`)
+        REFERENCES `defender_pocket` (`id`)
+        ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
 -- defender_lesson
 -- ---------------------------------------------------------------------
 
