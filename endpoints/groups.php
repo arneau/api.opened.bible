@@ -4,18 +4,27 @@
 require_once '../vendor/autoload.php';
 require_once '../generated-conf/config.php';
 
+// Use classes
+use Propel\Runtime\ActiveQuery\Criteria;
+
 // Set headers
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-// Get groups tree
+// Get groups datas
 if ($_GET['action'] == 'get_datas') {
 
 	$groups_datas = [];
 
-	$groups_objects = GroupQuery::create()
-		->filterByPrimaryKeys(explode(',', $_GET['ids']))
-		->find();
+	if (isset($_GET['ids'])) {
+		$groups_objects = GroupQuery::create()
+			->filterByPrimaryKeys(explode(',', $_GET['ids']))
+			->find();
+	} elseif (isset($_GET['search_term'])) {
+		$groups_objects = GroupQuery::create()
+			->filterByTitle($_GET['search_term'] . '%', Criteria::LIKE)
+			->find();
+	}
 
 	foreach ($groups_objects as $group_object) {
 		$groups_datas[$group_object->getId()] = [
@@ -49,10 +58,13 @@ if ($_GET['action'] == 'get_tree') {
 			continue;
 		}
 
-		if ($group_object->getParent()->getId() == 1) {
+		if ($group_object->getParent()
+				->getId() == 1
+		) {
 			$groups_tree[0][] = $group_object->getId();
 		} else {
-			$groups_tree[$group_object->getParent()->getId()][] = $group_object->getId();
+			$groups_tree[$group_object->getParent()
+				->getId()][] = $group_object->getId();
 		}
 
 	}
